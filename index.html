@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>注安法规 · 备考三件套</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(160deg,#f5f7fb 0%, #eef2f9 100%);
+    min-height:100vh; padding: 28px 20px calc(40px + env(safe-area-inset-bottom));
+    color:#1f2a44;
+  }
+  .header { text-align:center; margin-bottom: 26px; }
+  .badge {
+    display:inline-block; background:#e6f0ff; color:#2b5fd9;
+    font-size:12px; font-weight:600; letter-spacing:1px;
+    padding:4px 12px; border-radius:999px; margin-bottom:10px;
+  }
+  h1 { font-size:22px; font-weight:700; margin-bottom:6px; }
+  .sub { font-size:13px; color:#66708a; line-height:1.6; }
+  .countdown {
+    margin:14px auto 0; display:inline-block; background:#fff; border:1px solid #e3e8f2;
+    border-radius:12px; padding:8px 16px; font-size:14px; font-weight:600; color:#2b5fd9;
+    box-shadow:0 2px 8px rgba(43,95,217,.08);
+  }
+  .cards { display:flex; flex-direction:column; gap:14px; }
+  .card {
+    display:block; background:#fff; border-radius:16px; padding:18px;
+    text-decoration:none; color:#1f2a44; position:relative; overflow:hidden;
+    box-shadow:0 3px 12px rgba(31,42,68,.07); border:1px solid #e8ecf4;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:active { transform:scale(.985); box-shadow:0 1px 4px rgba(31,42,68,.1); }
+  .card .tag {
+    display:inline-block; font-size:11px; font-weight:700; letter-spacing:.5px;
+    padding:3px 10px; border-radius:999px; margin-bottom:10px; color:#fff;
+  }
+  .c1 .tag { background:#2b5fd9; }
+  .c2 .tag { background:#0e9f6e; }
+  .c3 .tag { background:#d97706; }
+  .card h2 { font-size:18px; font-weight:700; margin-bottom:6px; }
+  .card p { font-size:13px; color:#66708a; line-height:1.7; }
+  .arrow {
+    position:absolute; right:16px; top:50%; transform:translateY(-50%);
+    font-size:22px; color:#c3cbe0; font-weight:700;
+  }
+  .sync-card {
+    margin-top:18px; background:#fff; border:1px solid #d8e2f8; border-radius:16px;
+    padding:16px 18px; box-shadow:0 3px 12px rgba(31,42,68,.05);
+  }
+  .sync-card h2 { font-size:16px; font-weight:700; margin-bottom:8px; }
+  .sync-card p { font-size:12.5px; color:#5b6478; line-height:1.8; margin-bottom:12px; }
+  .sync-card code { background:#eef2f9; padding:1px 5px; border-radius:4px; font-size:12px; }
+  .sync-row { display:flex; gap:8px; }
+  .sync-row input {
+    flex:1; min-width:0; padding:10px 12px; border:1px solid #d4dcec; border-radius:10px;
+    font-size:13px; outline:none;
+  }
+  .sync-row input:focus { border-color:#2b5fd9; }
+  .sync-row button {
+    flex:none; padding:10px 18px; border:none; border-radius:10px;
+    background:#2b5fd9; color:#fff; font-size:13px; font-weight:600;
+  }
+  .sync-row button:active { background:#234fb0; }
+  .sync-status { margin-top:10px; font-size:12px; color:#0e9f6e; min-height:16px; line-height:1.6; }
+  .note {
+    margin-top:22px; background:#fff8e8; border:1px solid #f5e3b8; border-radius:12px;
+    padding:14px 16px; font-size:12.5px; color:#7a5b1d; line-height:1.8;
+  }
+  .note b { color:#5c430f; }
+  .tip {
+    margin-top:14px; background:#f0f4ff; border:1px solid #d8e2f8; border-radius:12px;
+    padding:14px 16px; font-size:12.5px; color:#3d5178; line-height:1.8;
+  }
+  .foot { text-align:center; margin-top:26px; font-size:11px; color:#9aa3ba; line-height:1.8; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="badge">2026 中级注册安全工程师 · 法规科目</div>
+    <h1>备考三件套</h1>
+    <div class="sub">刷题 · 看进度 · 背口诀<br>手机浏览器直接打开即可</div>
+    <div class="countdown" id="cd">距考试 -- 天</div>
+  </div>
+
+  <div class="cards">
+    <a class="card c1" href="注册安全工程师-法规-个人工作台.html">
+      <span class="tag">主战场 · 刷题</span>
+      <h2>法规题库工作台</h2>
+      <p>841 题（221 母题 + 620 真题），每日练习 / 真题自测 / 错题本 / 番茄钟</p>
+      <span class="arrow">›</span>
+    </a>
+    <a class="card c2" href="注安法规-备考进度看板.html">
+      <span class="tag">进度 · 复盘</span>
+      <h2>备考进度看板</h2>
+      <p>倒计时、打卡热力、模块薄弱、十周速查、模考对照线</p>
+      <span class="arrow">›</span>
+    </a>
+    <a class="card c3" href="安全生产法-口诀卡.html">
+      <span class="tag">通勤 · 背记</span>
+      <h2>安全生产法口诀卡</h2>
+      <p>30 张卡 · 方针/总则/保障，3D 翻面，标掌握，通勤路上过一遍</p>
+      <span class="arrow">›</span>
+    </a>
+  </div>
+
+  <div class="sync-card">
+    <h2>🔧 GitHub 同步设置</h2>
+    <p>填入你的 GitHub 个人访问令牌（PAT，创建时勾选 <code>gist</code> 权限）。令牌只存在你<b>本机浏览器</b>，不经过任何服务器。填好后，刷题/打卡/掌握状态会实时同步到你 GitHub 账号下的一个<b>私有 Gist</b>，手机流量、家里、单位任意网络都能用。</p>
+    <div class="sync-row">
+      <input id="ghToken" type="password" placeholder="粘贴 Token（ghp_... 或 github_pat_...）" autocomplete="off" spellcheck="false">
+      <button id="ghSave" type="button">保存</button>
+    </div>
+    <div id="ghStatus" class="sync-status"></div>
+  </div>
+
+  <div class="note">
+    <b>✅ 已接入公网云同步（GitHub 私有 Gist）：</b>三个页面通过你自己的 GitHub 账号实现<b>任意网络（单位 / 家里 / 手机流量）实时互通</b>。
+    在上方「GitHub 同步设置」粘贴你的 Token 即可开启；数据存在<b>你的私有 Gist</b>（仅你的令牌可读），不经过任何第三方。<br>
+    <b>怎么选：</b>通勤用手机流量刷/背、随手记状态；正式模考和错题三刷在电脑做，两边进度自动合并。
+  </div>
+
+  <div class="tip">
+    <b>使用提示：</b>① 手机/电脑浏览器打开<b>本页面（CloudStudio 公网网址）</b>；② 首次在「GitHub 同步设置」粘贴 Token；③ 建议添加到手机浏览器「主屏幕」，随时打开。
+  </div>
+
+  <div class="foot">数据存于你的 GitHub 私有 Gist（你自己的账号，Token 仅存本机浏览器）<br>清浏览器缓存会丢失本机 Token，需重新粘贴；GitHub 账号里的 Gist 数据不受影响</div>
+
+<script>
+  (function(){
+    var exam = new Date(2026, 9, 24, 9, 0, 0);
+    var now = new Date();
+    var diff = Math.ceil((exam - now) / 86400000);
+    document.getElementById('cd').textContent = diff > 0 ? ('距 10/24 考试还有 ' + diff + ' 天') : '今天考试！加油 ✅';
+  })();
+  (function(){
+    var KEY = 'safe_plan_gh_token';
+    var inp = document.getElementById('ghToken');
+    var btn = document.getElementById('ghSave');
+    var st  = document.getElementById('ghStatus');
+    if (localStorage.getItem(KEY)) {
+      inp.placeholder = '已配置（如需更换请先清空输入框再粘贴）';
+      st.textContent = '✅ 已配置令牌，三件套已在同步中';
+    }
+    btn.addEventListener('click', function(){
+      var v = inp.value.trim();
+      if (!v) {
+        localStorage.removeItem(KEY);
+        st.style.color = '#d97706';
+        st.textContent = '已清除令牌，退回本机本地模式（不与手机互通）';
+        inp.placeholder = '粘贴 Token（ghp_... 或 github_pat_...）';
+        return;
+      }
+      localStorage.setItem(KEY, v);
+      st.style.color = '#0e9f6e';
+      st.textContent = '✅ 已保存。打开任意三件套页面即开始同步（首次会自动在你的 GitHub 建一个私有 Gist）';
+    });
+  })();
+</script>
+</body>
+</html>
