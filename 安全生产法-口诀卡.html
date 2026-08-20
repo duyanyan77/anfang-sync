@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>《安全生产法》口诀卡 · 总则/方针</title>
+<style>
+  :root{
+    --bg:#fafafa; --card:#ffffff; --line:#e5e7eb; --soft:#f3f4f6;
+    --tx:#111827; --mute:#6b7280; --sub:#9ca3af;
+    --p:#2563eb; --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
+    --front:#fffbeb; --front-line:#fde68a; --front-tx:#78350f;
+    --back:#eff6ff; --back-line:#bfdbfe; --back-tx:#1e40af;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:20px;background:var(--bg);color:var(--tx);font-family:-apple-system,"PingFang SC","Microsoft YaHei",Arial,sans-serif;font-size:14px;line-height:1.6}
+  h1{margin:0;font-size:20px;font-weight:700}
+  .head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:14px}
+  .meta{color:var(--mute);font-size:12px}
+  .meta b{color:var(--tx);font-size:14px}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .chip{padding:5px 12px;border:1px solid var(--line);background:var(--card);border-radius:16px;font-size:12px;cursor:pointer;color:var(--mute);user-select:none}
+  .chip.on{background:var(--p);border-color:var(--p);color:#fff}
+  .stage{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .card3d{width:min(520px,94vw);height:280px;perspective:1200px;cursor:pointer}
+  .card3d .inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s}
+  .card3d.flipped .inner{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;padding:26px 30px;display:flex;flex-direction:column;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+  .face.front{background:var(--front);border:1.5px solid var(--front-line)}
+  .face.back{background:var(--back);border:1.5px solid var(--back-line);transform:rotateY(180deg)}
+  .face .tagrow{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--sub);margin-bottom:8px}
+  .face .badge{display:inline-block;padding:2px 8px;border-radius:10px;background:#fff;border:1px solid var(--line);color:var(--mute)}
+  .face .badge.hot{background:#fee2e2;border-color:#fecaca;color:#b91c1c}
+  .front .mnemonic{font-size:26px;font-weight:800;color:var(--front-tx);letter-spacing:2px;line-height:1.5;margin-bottom:10px}
+  .front .hint{font-size:13px;color:#b45309}
+  .back .article{font-size:15px;color:var(--back-tx);font-weight:600;margin-bottom:8px}
+  .back .detail{font-size:13.5px;color:#1e3a8a;white-space:pre-wrap}
+  .back .src{font-size:11.5px;color:#64748b;margin-top:auto;border-top:1px dashed var(--back-line);padding-top:8px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .btn{padding:8px 16px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--tx);font-size:13px;cursor:pointer;transition:background .15s}
+  .btn:hover{background:var(--soft)}
+  .btn.primary{background:var(--p);border-color:var(--p);color:#fff}
+  .btn.ok{border-color:var(--ok);color:var(--ok)}
+  .btn.ok.on{background:var(--ok);border-color:var(--ok);color:#fff}
+  .btn.ghost{background:transparent}
+  .progress{display:flex;align-items:center;gap:10px;width:min(520px,94vw)}
+  .pbar{flex:1;height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+  .pbar .fill{height:100%;background:var(--ok);border-radius:4px;transition:width .3s}
+  .pn{font-size:13px;color:var(--mute)}
+  .note{margin-top:16px;text-align:center;font-size:11.5px;color:var(--sub)}
+  .note code{background:var(--soft);padding:1px 5px;border-radius:4px;font-size:11px}
+  .empty{text-align:center;color:var(--sub);padding:40px 0}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div>
+    <h1>📇 《安全生产法》口诀卡 <span style="font-size:13px;color:var(--mute);font-weight:400">总则 / 方针</span></h1>
+    <div class="meta">共 <b id="totalN">30</b> 张 · 已掌握 <b id="masteredN">0</b> · 点击卡片翻面</div>
+  </div>
+  <button class="btn" onclick="resetAll()" title="清空所有'已掌握'标记">重置掌握</button>
+</div>
+
+<div class="filters" id="filters"></div>
+
+<div class="stage" id="stage"></div>
+
+<script src="sync.js"></script>
+<script>
+/* =================== CARD DATA =================== */
+const CARDS = [
+  {id:1, grp:'方针', hot:1, front:'安全第一 · 预防为主 · 综合治理', hint:'安全生产方针三要素', article:'《安全生产法》第4条', detail:'安全生产工作坚持中国共产党的领导，树牢安全发展理念，坚持安全第一、预防为主、综合治理的方针。\n⚠️ 2021 修订新增“综合治理”，且前置了党的领导。多选爱考：“一预综”三要素+党的领导。', src:'第4条 · 高频'},
+  {id:2, grp:'方针', hot:0, front:'“三E”对策：工程 · 教育 · 强制', hint:'消除事故的三大对策（Engineering/Education/Enforcement）', article:'注安通用原则', detail:'工程技术对策（硬件）、安全教育对策（人）、强制管理对策（制度）。\n对应治理手段：技术消除隐患、培训提升意识、执法倒逼落实。', src:'系统安全 · 经典考点'},
+  {id:3, grp:'方针', hot:1, front:'三不伤害：不伤害自己 · 不伤害他人 · 不被他人伤害', hint:'从业人员安全行为准则', article:'注安通用原则', detail:'自己主动防护、他人协同防护、防范他人失误波及自身。\n常用于判断从业人员是否履行安全义务的主观题/多选。', src:'行为安全 · 高频'},
+  {id:4, grp:'方针', hot:1, front:'三级教育：厂级 · 车间级 · 班组级', hint:'新入职员工三级安全教育', article:'《生产经营单位安全培训规定》', detail:'厂（公司）级→车间级→班组级，逐级进行。未经三级安全教育合格不得上岗。\n⚠️ 注意与“三级培训”（总厂、分厂、车间）表述差异。', src:'培训规章 · 高频'},
+  {id:5, grp:'方针', hot:0, front:'四不放过：原因未查清 · 责任人未处理 · 整改未落实 · 人员未受教育', hint:'事故处理四原则', article:'《安全生产法》第104条·事故调查', detail:'①事故原因未查清不放过 ②责任人员未处理不放过 ③整改措施未落实不放过 ④有关人员未受到教育不放过。\n多选常全选，注意“责任人未处理”而非“未受处罚”。', src:'事故调查 · 高频'},
+  {id:6, grp:'方针', hot:1, front:'三个必须：管行业必须管安全 · 管业务必须管安全 · 管生产经营必须管安全', hint:'监管责任口诀', article:'《安全生产法》第3条', detail:'2021 修订写入“三个必须”，明确综合监管+行业监管并重。\n判断政府监管责任归属的首选依据。', src:'第3条 · 高频'},
+  {id:7, grp:'方针', hot:0, front:'党政同责 · 一岗双责 · 齐抓共管 · 失职追责', hint:'安全生产责任体系十六字', article:'《中共中央国务院关于推进安全生产领域改革发展的意见》', detail:'党政同责：党政领导班子同等责任；一岗双责：管业务也管安全；齐抓共管：多部门协同；失职追责：不履职必追责。', src:'政策文件 · 记忆'},
+  {id:8, grp:'方针', hot:0, front:'四色风险：红 · 橙 · 黄 · 蓝', hint:'安全风险分级管控颜色', article:'《安全生产法》第41条·风险分级管控', detail:'红=重大风险、橙=较大风险、黄=一般风险、蓝=低风险。\n企业应建立风险分级管控制度，重大风险制定专项管控措施。', src:'第41条 · 记忆'},
+  {id:9, grp:'方针', hot:1, front:'双重预防机制：风险分级管控 + 隐患排查治理', hint:'安全生产双重预防', article:'《安全生产法》第41条', detail:'风险管控在前（预防）、隐患排查在后（治理），两道防线。\n“双重”=风险管控+隐患治理，2021 修订后企业法定职责，多选高频。', src:'第41条 · 高频'},
+  {id:10, grp:'总则', hot:1, front:'立法四目的：加强 · 防止减少 · 保障 · 促进', hint:'《安全生产法》第1条立法目的', article:'《安全生产法》第1条', detail:'①加强安全生产工作 ②防止和减少生产安全事故 ③保障人民群众生命和财产安全 ④促进经济社会持续健康发展。\n按“手段→直接目的→根本目的”递进记。', src:'第1条 · 高频'},
+  {id:11, grp:'总则', hot:0, front:'适用范围：中国境内 · 生产经营单位', hint:'《安全生产法》第2条', article:'《安全生产法》第2条', detail:'在中国领域内从事生产经营活动的单位的安全生产，适用本法。\n⚠️ 特殊领域优先适用其他法律：消防、道路交通、特种设备、核与辐射等。', src:'第2条 · 易错'},
+  {id:12, grp:'总则', hot:0, front:'党的领导：人民至上 · 生命至上', hint:'2021 新增总则要求', article:'《安全生产法》第3条', detail:'安全生产工作坚持中国共产党的领导；坚持人民至上、生命至上，把保护人民生命安全摆在首位。\n“人民至上、生命至上”是安全发展理念的核心表达。', src:'第3条 · 高频'},
+  {id:13, grp:'总则', hot:1, front:'主体责任人：主要负责人 · 全面负责', hint:'《安全生产法》第5条', article:'《安全生产法》第5条', detail:'生产经营单位的主要负责人是本单位安全生产第一责任人，对本单位安全生产工作全面负责。其他负责人对职责范围内的安全生产工作负责。\n⚠️ 主体是“主要负责人”，不是法定代表人、不是安全总监。', src:'第5条 · 高频必考'},
+  {id:14, grp:'总则', hot:0, front:'从业权义：权利保障 · 义务履行', hint:'《安全生产法》第6条', article:'《安全生产法》第6条', detail:'从业人员依法获得安全生产保障的权利，并应当依法履行安全生产方面的义务。\n权利与义务并行，禁止只谈权利不谈义务。', src:'第6条 · 记忆'},
+  {id:15, grp:'总则', hot:0, front:'工会监督：民主管理 · 民主监督 · 维护职工权益', hint:'《安全生产法》第7条', article:'《安全生产法》第7条', detail:'工会依法组织职工参加本单位安全生产工作的民主管理和民主监督，维护职工在安全生产方面的合法权益。', src:'第7条 · 记忆'},
+  {id:16, grp:'总则', hot:0, front:'政府职责：属地监管 · 一岗双责', hint:'地方各级政府职责', article:'《安全生产法》第8条', detail:'县级以上地方政府负责本行政区域内安全生产工作，纳入国民经济和社会发展规划，明确部门监管职责。', src:'第8条 · 记忆'},
+  {id:17, grp:'总则', hot:1, front:'监管体制：应急综合 + 行业主管 + 属地负责', hint:'安全监管“三线”', article:'《安全生产法》第9、10条', detail:'应急管理部门：综合监督管理；负有监管职责的部门：各自行业/领域监督管理；地方政府：属地管理。\n综合监管≠替代监管，行业监管与综合监管并立。', src:'第9/10条 · 高频'},
+  {id:18, grp:'总则', hot:0, front:'标准体系：国家标准 + 行业标准', hint:'安全生产标准制定', article:'《安全生产法》第11条', detail:'国务院应急管理部门牵头制定国家标准，行业标准可依据国家标准制定并严于国家标准（地方标准亦可更严）。\n⚠️ 行业标准、地方标准可严于国家标准，不可低于。', src:'第11条 · 易错'},
+  {id:19, grp:'总则', hot:0, front:'行业协会：自律 · 服务 · 沟通', hint:'《安全生产法》第13条', article:'《安全生产法》第13条', detail:'依法成立的安全生产行业协会，提供安全生产服务、开展行业自律、促进交流合作。', src:'第13条 · 记忆'},
+  {id:20, grp:'总则', hot:0, front:'政府奖惩：奖励先进 · 考核问效', hint:'安全生产奖励与考核', article:'《安全生产法》第14条', detail:'对改善安全生产条件、防止生产安全事故、参加抢险救护等方面取得显著成绩的单位和个人，给予奖励；安全生产工作纳入政府绩效考核。', src:'第14条 · 记忆'},
+  {id:21, grp:'总则', hot:0, front:'事故统计：如实统计 · 依法公布', hint:'《安全生产法》第16条', article:'《安全生产法》第16条', detail:'国家实行生产安全事故责任追究制度；县级以上政府如实统计上报事故，向社会公布。', src:'第16条 · 记忆'},
+  {id:22, grp:'总则', hot:0, front:'安责险：高危行业强制投保', hint:'安全生产责任保险', article:'《安全生产法》第51条', detail:'国家鼓励生产经营单位投保安全生产责任保险；属于国家规定的高危行业、领域的，应当投保。\n⚠️ 高危行业=强制，一般行业=鼓励。', src:'第51条 · 易错'},
+  {id:23, grp:'保障', hot:1, front:'主要负责人 7 项职责：责任制 · 制度 · 投入 · 督促 · 演练 · 报告', hint:'第21条 主要负责人法定职责', article:'《安全生产法》第21条', detail:'①建立健全全员安全生产责任制 ②组织制定安全生产规章制度和操作规程 ③保证安全投入有效实施 ④督促检查、消除事故隐患 ⑤组织制定并实施应急救援预案 ⑥及时如实报告生产安全事故 ⑦组织制定并实施教育培训计划。', src:'第21条 · 必考'},
+  {id:24, grp:'保障', hot:0, front:'高危行业五类：矿山 · 金属冶炼 · 危化品 · 建筑施工 · 道路运输', hint:'高危行业范围（多发一题）', article:'《安全生产法》第41/57条等综合', detail:'矿山、金属冶炼、建筑施工、运输（道路运输）、危险物品的生产经营储存装卸。\n⚠️ 与“强制投保安责险的高危行业”基本同源，注意与军工/机械制造区分。', src:'高危行业 · 高频'},
+  {id:25, grp:'保障', hot:1, front:'三同时：同时设计 · 同时施工 · 同时投入生产和使用', hint:'安全设施“三同时”', article:'《安全生产法》第31条', detail:'新建、改建、扩建工程项目的安全设施必须与主体工程同时设计、同时施工、同时投入生产和使用。\n安全设施投资纳入建设项目概算。', src:'第31条 · 高频'},
+  {id:26, grp:'保障', hot:0, front:'重大危险源：登记建档 · 定期检测 · 评估监控 · 制定预案 · 告知警示', hint:'重大危险源管理五步', article:'《安全生产法》第40条', detail:'①登记建档 ②定期检测、评估、监控 ③制定应急预案 ④告知从业人员和相关人员在紧急情况下应当采取的应急措施 ⑤设置明显的安全警示标志。', src:'第40条 · 高频'},
+  {id:27, grp:'保障', hot:0, front:'隐患排查：建立制度 · 记录建档 · 跟踪督办', hint:'事故隐患排查治理', article:'《安全生产法》第41条', detail:'建立健全事故隐患排查治理制度，如实记录、通报，重大隐患报告有关部门，治理后销号。\n“双报告”：向职代会报告+向负有监管职责部门报告（重大隐患）。', src:'第41条 · 高频'},
+  {id:28, grp:'保障', hot:0, front:'从业人员权利：知情建议 · 拒绝违章 · 紧急避险 · 检举控告 · 工伤赔偿', hint:'从业人员 5 项权利', article:'《安全生产法》第52–55条', detail:'①知情建议权 ②拒绝违章指挥、强令冒险作业权 ③紧急避险权（撤离现场） ④批评检举控告权 ⑤工伤保险与民事赔偿请求权。\n⚠️ 拒绝违章≠擅离职守，紧急避险受法律保护。', src:'第52-55条 · 高频'},
+  {id:29, grp:'保障', hot:0, front:'从业人员义务：遵章守纪 · 服从管理 · 正确佩戴 · 接受培训 · 报告隐患', hint:'从业人员 5 项义务', article:'《安全生产法》第56–58条', detail:'①遵章守纪、服从管理 ②正确佩戴和使用劳动防护用品 ③接受教育培训、掌握安全技能 ④发现事故隐患或其他不安全因素立即报告。', src:'第56-58条 · 高频'},
+  {id:30, grp:'保障', hot:0, front:'应急救援：预案 · 器材 · 队伍 · 演练 · 告知', hint:'应急救援五要素', article:'《安全生产法》第81–82条', detail:'①制定应急救援预案并备案 ②配备必要的应急救援器材、设备和物资 ③高危行业建立应急救援组织/指定兼职救援人员 ④定期组织演练 ⑤将应急措施告知从业人员。', src:'第81-82条 · 高频'},
+];
+
+/* =================== STORAGE（与工作台/看板共享 safe_plan_ namespace） =================== */
+/* load/save/NS 已统一在 sync.js 提供（服务端同步），此处不再定义 */
+
+/* =================== STATE =================== */
+let mastered = load('cardMastered', []);       // [id,...]
+let grpFilter = '全部';                          // '全部' or grp name
+let onlyUnseen = false;                          // 只看未掌握
+let idx = 0;
+let flipped = false;
+let deck = [];                                   // 当前展示序列
+
+function buildDeck(){
+  deck = CARDS.filter(c=>{
+    if(grpFilter!=='全部' && c.grp!==grpFilter) return false;
+    if(onlyUnseen && mastered.includes(c.id)) return false;
+    return true;
+  });
+  if(idx>=deck.length) idx=0;
+}
+
+/* =================== RENDER =================== */
+function renderFilters(){
+  const grps = ['全部', ...Array.from(new Set(CARDS.map(c=>c.grp)))];
+  document.getElementById('filters').innerHTML =
+    grps.map(g=>`<span class="chip ${g===grpFilter?'on':''}" onclick="setGrp('${g}')">${g}${g==='全部'?` · ${CARDS.length}`:''}</span>`).join('') +
+    `<span class="chip ${onlyUnseen?'on':''}" style="margin-left:6px" onclick="toggleUnseen()">只看未掌握</span>`;
+}
+
+function render(){
+  renderFilters();
+  document.getElementById('totalN').textContent = CARDS.length;
+  document.getElementById('masteredN').textContent = mastered.length;
+  const stage = document.getElementById('stage');
+  if(!deck.length){
+    stage.innerHTML = `<div class="empty">当前筛选下没有卡片。<br><button class="btn" style="margin-top:10px" onclick="clearFilters()">清除筛选</button></div>`;
+    return;
+  }
+  const c = deck[idx];
+  const isMastered = mastered.includes(c.id);
+  stage.innerHTML = `
+    <div class="progress">
+      <div class="pn">${idx+1} / ${deck.length}</div>
+      <div class="pbar"><div class="fill" style="width:${(idx+1)/deck.length*100}%"></div></div>
+      <span class="chip" style="cursor:default;color:${isMastered?'var(--ok)':'var(--sub)'}">${isMastered?'✔ 已掌握':'未掌握'}</span>
+    </div>
+    <div class="card3d ${flipped?'flipped':''}" id="card3d" onclick="flip()">
+      <div class="inner">
+        <div class="face front">
+          <div class="tagrow"><span class="badge ${c.hot?'hot':''}">${c.hot?'🔥 高频':'✦ 记忆'}</span><span class="badge">${c.grp}</span></div>
+          <div class="mnemonic">${c.front}</div>
+          <div class="hint">${c.hint}</div>
+        </div>
+        <div class="face back">
+          <div class="tagrow"><span class="badge">${c.grp} · 背面</span><span class="badge">点击回正面</span></div>
+          <div class="article">${c.article}</div>
+          <div class="detail">${c.detail}</div>
+          <div class="src">出处：${c.src}</div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="prev()">◀ 上一张</button>
+      <button class="btn" onclick="flip()">翻面</button>
+      <button class="btn ${isMastered?'ok on':''}" onclick="toggleMaster()">${isMastered?'✔ 已掌握':'标为掌握'}</button>
+      <button class="btn" onclick="next()">下一张 ▶</button>
+      <button class="btn ghost" onclick="shuffle()">🔀 打乱</button>
+    </div>`;
+  // 显示当前卡序号
+}
+
+/* =================== ACTIONS =================== */
+function flip(){ flipped=!flipped; render(); }
+function next(){ if(deck.length){ idx=(idx+1)%deck.length; flipped=false; render(); } }
+function prev(){ if(deck.length){ idx=(idx-1+deck.length)%deck.length; flipped=false; render(); } }
+function shuffle(){
+  for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+  idx=0; flipped=false; render();
+}
+function toggleMaster(){
+  const c=deck[idx]; if(!c) return;
+  const i=mastered.indexOf(c.id);
+  if(i>=0) mastered.splice(i,1); else mastered.push(c.id);
+  save('cardMastered', mastered);
+  // 只看未掌握模式下自动跳到下一张
+  if(onlyUnseen && i<0){ idx=(idx+1)%deck.length; }
+  flipped=false; render();
+}
+function setGrp(g){ grpFilter=g; idx=0; flipped=false; buildDeck(); render(); }
+function toggleUnseen(){ onlyUnseen=!onlyUnseen; idx=0; flipped=false; buildDeck(); render(); }
+function clearFilters(){ grpFilter='全部'; onlyUnseen=false; buildDeck(); render(); }
+function resetAll(){
+  if(!confirm('确认清空所有"已掌握"标记？')) return;
+  mastered=[]; save('cardMastered', mastered); flipped=false; render();
+}
+
+/* =================== INIT =================== */
+runWhenReady(()=>{
+  mastered = load('cardMastered', []);
+  buildDeck();
+  render();
+});
+</script>
+</body>
+</html>
