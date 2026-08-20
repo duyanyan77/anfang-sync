@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>注安法规·备考进度看板</title>
+<style>
+  :root{
+    --bg:#fafafa; --card:#ffffff; --line:#e5e7eb; --soft:#f3f4f6;
+    --tx:#111827; --mute:#6b7280; --sub:#9ca3af;
+    --p:#2563eb; --ok:#10b981; --warn:#f59e0b; --bad:#ef4444;
+    --p1:#dbeafe; --p2:#fef3c7; --p3:#fee2e2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:24px;background:var(--bg);color:var(--tx);font-family:-apple-system,"PingFang SC","Microsoft YaHei",Arial,sans-serif;font-size:14px;line-height:1.5}
+  h1,h2,h3{margin:0;font-weight:600}
+  h1{font-size:22px}
+  h2{font-size:16px;margin-bottom:12px}
+  h3{font-size:14px;color:var(--mute);font-weight:500;margin-bottom:8px}
+  .header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+  .countdown{display:flex;align-items:baseline;gap:10px}
+  .countdown .num{font-size:54px;font-weight:700;color:var(--p);line-height:1}
+  .countdown .lbl{color:var(--mute);font-size:13px}
+  .headMeta{text-align:right;color:var(--mute);font-size:13px}
+  .headMeta b{color:var(--tx);font-size:15px}
+  .grid{display:grid;gap:16px}
+  .kpis{grid-template-columns:repeat(5,1fr)}
+  .weeks{grid-template-columns:1fr 1fr}
+  .row2{grid-template-columns:2fr 1fr}
+  @media (max-width:900px){
+    .kpis,.weeks,.row2{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:600px){
+    .kpis,.weeks,.row2{grid-template-columns:1fr}
+  }
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+  .kpi .lbl{color:var(--mute);font-size:12px;margin-bottom:6px}
+  .kpi .val{font-size:28px;font-weight:700;color:var(--tx);line-height:1.2}
+  .kpi .val.ok{color:var(--ok)}
+  .kpi .val.warn{color:var(--warn)}
+  .kpi .val.bad{color:var(--bad)}
+  .kpi .sub{font-size:11px;color:var(--sub);margin-top:4px}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--soft);font-size:13px;vertical-align:top}
+  th{color:var(--mute);font-weight:500;background:var(--soft);font-size:12px}
+  td b{color:var(--tx)}
+  .pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500;background:var(--soft);color:var(--mute)}
+  .pill.p1{background:var(--p1);color:#1d4ed8}
+  .pill.p2{background:var(--p2);color:#92400e}
+  .pill.p3{background:var(--p3);color:#b91c1c}
+  .pill.ok{background:#d1fae5;color:#065f46}
+  .pill.bad{background:#fee2e2;color:#b91c1c}
+  .pill.cur{background:#dbeafe;color:#1d4ed8}
+  .heatmap{display:grid;grid-template-columns:60px repeat(7,1fr);gap:6px;margin-top:6px}
+  .heatmap .hd{font-size:11px;color:var(--mute);text-align:center;padding:4px 0}
+  .heatmap .hd.dow{padding:6px 0;font-weight:500;color:var(--tx)}
+  .heatmap .slot-hd{display:flex;align-items:center;gap:6px;color:var(--mute);font-size:12px;padding:4px 6px}
+  .cell{aspect-ratio:1;border-radius:6px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--mute);min-height:36px}
+  .cell.done{background:var(--ok);color:#fff;font-weight:700}
+  .cell.partial{background:#fef3c7;color:#92400e}
+  .cell.today{outline:2px solid var(--p);outline-offset:1px}
+  .bar{display:flex;align-items:center;gap:8px;padding:6px 0}
+  .bar .nm{width:140px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar .track{flex:1;height:14px;background:var(--soft);border-radius:7px;overflow:hidden;border:1px solid var(--line)}
+  .bar .fill{height:100%;background:var(--bad);transition:width .4s}
+  .bar .fill.ok{background:var(--ok)}
+  .bar .fill.warn{background:var(--warn)}
+  .bar .cnt{font-size:12px;color:var(--mute);min-width:40px;text-align:right}
+  .legend{display:flex;gap:12px;font-size:11px;color:var(--mute);margin-top:10px;flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:4px}
+  .swatch{width:14px;height:14px;border-radius:3px;display:inline-block}
+  .empty{padding:24px;text-align:center;color:var(--sub);font-size:13px}
+  .tip{background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:12px 16px;border-radius:8px;font-size:12px;margin-bottom:20px}
+  .tip b{color:#78350f}
+  .meta-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .weeks-list{display:flex;flex-direction:column;gap:0}
+  .wk-row{display:grid;grid-template-columns:60px 1fr 100px;gap:12px;padding:10px 0;border-bottom:1px solid var(--soft);align-items:center}
+  .wk-row:last-child{border-bottom:none}
+  .wk-row .tag{font-weight:700;color:var(--p)}
+  .wk-row.focus{background:#eff6ff;border-radius:6px;padding:10px;margin:-4px -4px}
+  .wk-row.past .tag{color:var(--mute)}
+  .mockline{border-collapse:collapse;width:100%}
+  .mockline th{font-size:12px}
+  .mockline .thr{font-family:Menlo,Consolas,monospace;font-size:11px;color:var(--mute)}
+  .alert{display:flex;gap:8px;padding:10px 12px;border-radius:6px;font-size:12px;margin-top:10px;line-height:1.5}
+  .alert.bad{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+  .alert.ok{background:#f0fdf4;color:#065f46;border:1px solid #bbf7d0}
+  .alert.info{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+</style>
+</head>
+<body>
+
+<div class="tip" id="emptyTip" style="display:none">
+  <b>还没数据。</b>原因是：你还没在工作台刷题或打卡。本看板从 <code>localStorage</code> 的 <code>safe_plan_*</code> 同 namespace 读数据，<b>必须先用同一浏览器打开</b>
+  <code>注册安全工程师-法规-个人工作台.html</code> 至少做一次练习/打卡。看板会自动刷新（重新打开或按 F5）。
+</div>
+
+<header class="header">
+  <div>
+    <h1>📊 注安法规 · 备考进度看板</h1>
+    <div class="headMeta" style="text-align:left;margin-top:6px" id="subline">2026 中级注册安全工程师 · 法规科目 · 目标 ≥60 分</div>
+  </div>
+  <div>
+    <div class="countdown">
+      <div class="num" id="cdDays">--</div>
+      <div>
+        <div style="font-size:13px"><b>距考试</b></div>
+        <div class="lbl" id="cdExamDate">2026-10-24</div>
+      </div>
+    </div>
+    <div class="headMeta">
+      <div>今天是 <b id="todayLabel">--</b></div>
+      <div id="cdWeek">--</div>
+    </div>
+  </div>
+</header>
+
+<!-- 5 KPI -->
+<section class="grid kpis" id="kpis"></section>
+
+<!-- 本周打卡 + 模块薄弱 -->
+<section class="grid row2" style="margin-top:16px">
+  <div class="card">
+    <div class="meta-row"><h2>🗓️ 本周打卡热力图</h2><span class="pill" id="wkRatePill">--</span></div>
+    <div class="heatmap" id="heatmap"></div>
+    <div class="legend">
+      <span><span class="swatch" style="background:var(--ok)"></span>已完成</span>
+      <span><span class="swatch" style="background:#fef3c7"></span>部分</span>
+      <span><span class="swatch" style="background:var(--soft)"></span>未完成</span>
+      <span><span class="swatch" style="outline:2px solid var(--p)"></span>今天</span>
+    </div>
+  </div>
+  <div class="card">
+    <div class="meta-row"><h2>🔥 模块薄弱热力</h2><span class="pill" id="weakPill">--</span></div>
+    <div id="mods"></div>
+  </div>
+</section>
+
+<!-- 十周目标速查 -->
+<section class="card" style="margin-top:16px">
+  <div class="meta-row"><h2>📅 十周目标速查（W1–W10）</h2><span class="pill" id="progPill">整体 --%</span></div>
+  <div class="weeks-list" id="weeksList"></div>
+</section>
+
+<!-- 模考对照线 -->
+<section class="card" style="margin-top:16px">
+  <div class="meta-row">
+    <h2>📈 模考成绩对照线</h2>
+    <div>
+      <span class="thr">阈值：W7 ≥ 50 → W8 ≥ 58 → W9 ≥ 60</span>
+    </div>
+  </div>
+  <table class="mockline">
+    <thead><tr>
+      <th>周次</th><th>套卷</th><th>日期</th><th>分数</th><th>对照阈值</th><th>判定</th>
+    </tr></thead>
+    <tbody id="mockRows"></tbody>
+  </table>
+  <div id="mockAlert"></div>
+</section>
+
+<script src="sync.js"></script>
+<script>
+/* =================== DATA（与工作台同步 schema，独立副本） =================== */
+const EXAM = '2026-10-24', START = '2026-08-18';
+const MODULES = [
+  {key:'m8',name:'基础知识',ic:'🧭'},
+  {key:'m1',name:'《安全生产法》',ic:'⚖️'},
+  {key:'m2',name:'单行法律',ic:'📜'},
+  {key:'m3',name:'相关法律',ic:'📖'},
+  {key:'m4',name:'行政法规',ic:'🏛️'},
+  {key:'m5',name:'部门规章',ic:'📋'},
+  {key:'m6',name:'习思想安全生产',ic:'🌟'},
+  {key:'m7',name:'标准+国际公约',ic:'🌐'},
+];
+const WEEKS = [
+  {w:1,start:'2026-08-18',end:'2026-08-24',phase:'Phase 1 · 诊断+核心',focus:'诊断薄弱章 + 《安全生产法》第1–3节（总则、安全保障上/下）'},
+  {w:2,start:'2026-08-25',end:'2026-08-31',phase:'Phase 1 · 诊断+核心',focus:'《安全生产法》第4–7节 + 错题本建立与专项复盘'},
+  {w:3,start:'2026-09-01',end:'2026-09-07',phase:'Phase 2 · 系统覆盖',focus:'单行法律（矿山/消防/道交/特种设备）+ 相关法律（刑法/处罚法/劳动法/应急）'},
+  {w:4,start:'2026-09-08',end:'2026-09-14',phase:'Phase 2 · 系统覆盖',focus:'安全生产行政法规（报告调查/许可/危化品/工伤/建设/煤矿监察）'},
+  {w:5,start:'2026-09-15',end:'2026-09-21',phase:'Phase 2 · 系统覆盖',focus:'安全生产部门规章（注册/培训/特种/隐患/预案/三同时）'},
+  {w:6,start:'2026-09-22',end:'2026-09-28',phase:'Phase 2 · 系统覆盖',focus:'习思想安全生产 + 标准体系/国际公约 + 弱项章二刷'},
+  {w:7,start:'2026-09-29',end:'2026-10-05',phase:'Phase 3 · 冲刺模考',focus:'真题模考①+② + 多选专项（少选保底策略）'},
+  {w:8,start:'2026-10-06',end:'2026-10-12',phase:'Phase 3 · 冲刺模考',focus:'错题三刷（遮答案重做）+ 真题套卷③'},
+  {w:9,start:'2026-10-13',end:'2026-10-19',phase:'Phase 3 · 冲刺模考',focus:'高频速记表（数字/时间/罚款）+ 真题套卷④'},
+  {w:10,start:'2026-10-20',end:'2026-10-24',phase:'Phase 3 · 冲刺模考',focus:'回归：只看错题本+速记表+教材标注，不做新题；考前收心'},
+];
+const SLOTS = [
+  {key:'morning',when:'早通勤'},
+  {key:'lunch',when:'午休'},
+  {key:'evening',when:'晚通勤'},
+  {key:'night',when:'夜间'},
+];
+const MOCK_THR = {7:50, 8:58, 9:60};
+
+/* =================== STORAGE =================== */
+/* load/NS 已统一在 sync.js 提供（服务端同步），此处不再定义 */
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function parseD(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function dayDiff(a,b){return Math.round((parseD(a)-parseD(b))/86400000);}
+function getWeek(dateStr){
+  for(const w of WEEKS){ if(dayDiff(dateStr,w.start)>=0 && dayDiff(w.end,dateStr)>=0) return w; }
+  if(dayDiff(dateStr,START)<0) return WEEKS[0];
+  return WEEKS[WEEKS.length-1];
+}
+function modName(k){const m=MODULES.find(x=>x.key===k);return m?m.name:'?';}
+
+/* =================== LOAD STATE =================== */
+function loadState(){
+  return {
+    checkin: load('checkin',{}),
+    quizzes: load('quizzes',[]),
+    weak: load('weak',[]),
+    mistakes: load('mistakes',[]),
+    pomo: load('pomo',{total:0,log:{}}),
+    dailyBasic: load('dailyBasic',{}),
+    weeklyPapers: load('weeklyPapers',{}),
+  };
+}
+let S = loadState();
+const HAS_DATA = !!(S.quizzes.length || Object.keys(S.checkin).length || S.weak.length || S.mistakes.length);
+
+/* =================== KPIs =================== */
+function sumKPI(){
+  let attempts=0, correct=0;
+  S.quizzes.forEach(q=>{attempts+=q.total; correct+=q.correct;});
+  const acc = attempts ? Math.round(correct/attempts*100) : 0;
+  // current streak: today full? then count back consecutive days where checkin has all 4 slots done
+  let streak=0; const t=todayStr();
+  let cursor = parseD(t);
+  while(true){
+    const ds = cursor.getFullYear()+'-'+String(cursor.getMonth()+1).padStart(2,'0')+'-'+String(cursor.getDate()).padStart(2,'0');
+    const c=S.checkin[ds];
+    if(c && c.morning && c.lunch && c.evening && c.night){ streak++; cursor.setDate(cursor.getDate()-1); }
+    else break;
+    if(streak>200) break;
+  }
+  return {
+    attempts, correct, acc,
+    streak,
+    mistakes: S.mistakes.length,
+    pomo: S.pomo.total || 0,
+  };
+}
+function renderKPI(){
+  const k = sumKPI();
+  let accCls = k.acc===0 ? '' : (k.acc>=75 ? 'ok' : (k.acc>=60 ? 'warn' : 'bad'));
+  let pnCls = k.streak>=7 ? 'ok' : (k.streak>=3 ? '' : 'warn');
+  document.getElementById('kpis').innerHTML = `
+    <div class="card kpi"><div class="lbl">📝 累计练习</div><div class="val">${k.attempts}</div><div class="sub">${S.quizzes.length} 次记录</div></div>
+    <div class="card kpi"><div class="lbl">🎯 正确率</div><div class="val ${accCls}">${k.acc>0?k.acc+'%':'--'}</div><div class="sub">${k.correct}/${k.attempts} 答对</div></div>
+    <div class="card kpi"><div class="lbl">🔥 连续打卡</div><div class="val ${pnCls}">${k.streak}</div><div class="sub">天（4 时段全完成）</div></div>
+    <div class="card kpi"><div class="lbl">📕 错题本</div><div class="val">${k.mistakes}</div><div class="sub">条</div></div>
+    <div class="card kpi"><div class="lbl">🍅 番茄累计</div><div class="val">${k.pomo}</div><div class="sub">个</div></div>
+  `;
+}
+
+/* =================== HEADER =================== */
+function renderHeader(){
+  const t=todayStr(); const cd=dayDiff(EXAM,t);
+  document.getElementById('cdDays').textContent = cd>=0?cd:0;
+  document.getElementById('cdExamDate').textContent = EXAM + ' 09:00–11:30';
+  const wk=['日','一','二','三','四','五','六'][new Date().getDay()];
+  document.getElementById('todayLabel').textContent = `${t} 周${wk}`;
+  const w=getWeek(t);
+  document.getElementById('cdWeek').textContent = `${w.phase} · 第${w.w}周（${w.start.slice(5)}–${w.end.slice(5)}）`;
+}
+
+/* =================== HEATMAP =================== */
+function renderHeatmap(){
+  const w = getWeek(todayStr());
+  const html = ['<div class="hd"></div>'];
+  const dates=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(parseD(w.start));d.setDate(d.getDate()+i);
+    const ds=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    dates.push(ds);
+    html.push(`<div class="hd dow">周${['日','一','二','三','四','五','六'][d.getDay()]}<br><span style="font-size:10px">${ds.slice(5)}</span></div>`);
+  }
+  let doneCells=0, totalCells=0;
+  SLOTS.forEach(s=>{
+    html.push(`<div class="slot-hd">${s.when}</div>`);
+    dates.forEach(ds=>{
+      const inPast = dayDiff(todayStr(),ds)>=0;
+      const c = S.checkin[ds] || {};
+      const isToday = ds===todayStr();
+      const isFuture = !inPast;
+      let cls = 'cell';
+      if(isFuture) cls += '';
+      else {
+        const v=!!c[s.key];
+        totalCells++;
+        if(v){ cls+=' done'; doneCells++; }
+      }
+      if(isToday) cls+=' today';
+      html.push(`<div class="${cls}">${cls.indexOf('done')>=0?'✓':''}</div>`);
+    });
+  });
+  document.getElementById('heatmap').innerHTML = html.join('');
+  const rate = totalCells ? Math.round(doneCells/totalCells*100) : 0;
+  let cls='cur';
+  if(totalCells===0){ document.getElementById('wkRatePill').innerHTML='<span class="pill">本周还没数据</span>'; return; }
+  if(rate>=80) cls='ok';
+  else if(rate<60) cls='bad';
+  document.getElementById('wkRatePill').innerHTML = `<span class="pill ${cls}">本周 ${rate}% · ${doneCells}/${totalCells} 时段</span>`;
+}
+
+/* =================== WEEKS LIST =================== */
+function renderWeeks(){
+  const t=todayStr(); const cur=getWeek(t);
+  const hl = document.getElementById('weeksList');
+  hl.innerHTML='';
+  WEEKS.forEach(wk=>{
+    let cls='wk-row';
+    if(wk.w < cur.w) cls += ' past';
+    const pillCls = wk.phase.startsWith('Phase 1') ? 'p1' : (wk.phase.startsWith('Phase 2') ? 'p2' : 'p3');
+    const pillShort = wk.phase.split('·')[1] ? wk.phase.split('·')[1].trim() : wk.phase;
+    let status='';
+    if(wk.w < cur.w) status='<span class="pill">已结束</span>';
+    else if(wk.w === cur.w) status='<span class="pill cur">进行中</span>';
+    else status='<span class="pill">未开始</span>';
+    hl.innerHTML += `<div class="${cls}">
+      <div class="tag">W${wk.w}</div>
+      <div>
+        <div style="margin-bottom:3px"><span class="pill ${pillCls}">${pillShort}</span> <span style="color:var(--mute);font-size:11px">${wk.start.slice(5)}–${wk.end.slice(5)}</span></div>
+        <div style="font-size:12px;color:var(--mute)">${wk.focus}</div>
+      </div>
+      <div style="text-align:right">${status}</div>
+    </div>`;
+  });
+  const prog = Math.round((cur.w-1)/WEEKS.length*100);
+  document.getElementById('progPill').textContent = `整体 ${prog}% · 第${cur.w}周 / 共${WEEKS.length}周`;
+  document.getElementById('progPill').className = 'pill cur';
+}
+
+/* =================== MOCK LINE =================== */
+function renderMock(){
+  const rows=[];
+  let allScores=[], missingWeeks=[];
+  for(let w=7; w<=9; w++){
+    const wkKey = 'W'+w;
+    const arr = S.weeklyPapers[wkKey] || [];
+    if(!arr.length){ missingWeeks.push(w); continue; }
+    arr.forEach((p,idx)=>{
+      const thr = MOCK_THR[w];
+      const ok = p.score >= thr;
+      allScores.push({w, score:p.score, ok, label:p.label});
+      rows.push(`<tr>
+        <td><b>W${w}</b></td>
+        <td>${p.label||('套卷'+(idx+1))}</td>
+        <td><code style="font-size:11px">${p.date||'--'}</code></td>
+        <td><b style="color:${ok?'var(--ok)':'var(--bad)'}">${p.score}</b></td>
+        <td><span class="thr">≥ ${thr}</span></td>
+        <td><span class="pill ${ok?'ok':'bad'}">${ok?'达标':'未达'}</span></td>
+      </tr>`);
+    });
+  }
+  if(rows.length===0){
+    document.getElementById('mockRows').innerHTML = `<tr><td colspan="6"><div class="empty">暂没有模考/真题套卷记录。<br>W7 起开始做模考时，工作台会自动把分数入此。</div></td></tr>`;
+  } else document.getElementById('mockRows').innerHTML = rows.join('');
+  // alert
+  const al = document.getElementById('mockAlert');
+  if(allScores.length && allScores.some(s=>!s.ok)){
+    const bad = allScores.filter(s=>!s.ok);
+    al.innerHTML = `<div class="alert bad"><b>⚠️ 未达阈值</b> · ${bad.length} 套低于本阶段最低分。建议：本周加 1 套模考 + 错题本红标复盘。</div>`;
+  } else if(missingWeeks.length===3){
+    al.innerHTML = `<div class="alert info"><b>ℹ️</b> W7–W9 还没开始模考，正常。考试 ~9 周后，按计划 W7 启动冲刺。</div>`;
+  } else if(allScores.length && allScores.every(s=>s.ok)){
+    al.innerHTML = `<div class="alert ok"><b>✅ 节奏正常</b> · 所有已交套卷均达阈值。继续。</div>`;
+  } else {
+    al.innerHTML = `<div class="alert info"><b>ℹ️</b> W7–W9 中尚有 ${missingWeeks.length} 个阶段未开始模考。</div>`;
+  }
+}
+
+/* =================== MODULE WEAKNESS =================== */
+function renderMods(){
+  // weight: mistakes primary, weak secondary
+  const cnt={}; const wcnt={};
+  S.mistakes.forEach(m=>{ cnt[m.mod]=(cnt[m.mod]||0)+1; });
+  S.weak.forEach(w=>{ wcnt[w.mod]=(wcnt[w.mod]||0)+1; });
+  const score={};
+  MODULES.forEach(m=>{ score[m.key]=cnt[m.key]||0; });
+  const max = Math.max(1, ...Object.values(score));
+  let html='';
+  MODULES.forEach(m=>{
+    const v = score[m.key];
+    const pct = Math.round(v/max*100);
+    let cls = v===0 ? 'ok' : (v>=15 ? '' : 'warn'); // >=15 throw red
+    let fillCls = v===0 ? 'ok' : (v>=15 ? '' : 'warn');
+    html += `<div class="bar">
+      <div class="nm" title="${m.name}">${m.ic} ${m.name}</div>
+      <div class="track"><div class="fill ${fillCls}" style="width:${v===0?8:pct}%"></div></div>
+      <div class="cnt">${v===0?'0':v+' 错'}</div>
+    </div>`;
+  });
+  document.getElementById('mods').innerHTML = html || '<div class="empty">暂无错题数据</div>';
+  const totalMods = Object.values(score).filter(v=>v>0).length;
+  let pctxt='--';
+  let cls='cur';
+  if(totalMods===0) pctxt='薄弱 = 0';
+  else if(totalMods>=5){ pctxt = `${totalMods}/8 模块有薄弱`; cls='bad'; }
+  else { pctxt = `${totalMods}/8 模块有薄弱`; cls='warn'; }
+  document.getElementById('weakPill').innerHTML = `<span class="pill ${cls}">${pctxt}</span>`;
+}
+
+/* =================== MAIN =================== */
+runWhenReady(()=>{
+  S = loadState();
+  const has = !!(S.quizzes.length || Object.keys(S.checkin).length || S.weak.length || S.mistakes.length);
+  document.getElementById('emptyTip').style.display = has ? 'none' : 'block';
+  renderHeader();
+  renderKPI();
+  renderHeatmap();
+  renderMods();
+  renderWeeks();
+  renderMock();
+});
+</script>
+</body>
+</html>
