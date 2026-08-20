@@ -195,18 +195,49 @@
   .row-between{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
   .mt{margin-top:16px}.mb{margin-bottom:16px}
   .muted{color:var(--muted)}
+
+  /* ---------- Mobile nav ---------- */
+  .menu-toggle{display:none;align-items:center;justify-content:center;width:40px;height:40px;border:none;border-radius:11px;background:var(--card);color:var(--ink);font-size:20px;cursor:pointer;box-shadow:var(--shadow);z-index:90}
+  .menu-close{display:none;background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;margin-left:auto;padding:4px}
+  @media(max-width:760px){
+    .app{flex-direction:column;min-height:100vh}
+    .sidebar{
+      position:fixed;left:0;top:0;width:260px;height:100vh;z-index:100;
+      transform:translateX(-100%);transition:transform .22s ease;
+      box-shadow:4px 0 20px rgba(0,0,0,.15);border-right:none;
+    }
+    .sidebar.open{transform:translateX(0)}
+    .menu-toggle{display:flex;position:fixed;left:12px;top:12px}
+    .menu-close{display:flex}
+    .main{margin-left:0;width:100%;min-height:100vh}
+    .topbar{padding:16px 18px 16px 58px;border-radius:0}
+    .topbar .tb-left h2{font-size:17px}
+    .topbar .tb-left p{font-size:11px}
+    .tb-badges{gap:8px}
+    .tb-badge{min-width:74px;padding:7px 10px;border-radius:11px}
+    .tb-badge .num{font-size:18px}
+    .tb-badge .lab{font-size:10px}
+    .content{padding:18px 16px 32px}
+    .brand{padding-bottom:10px}
+    .nav button{padding:13px 12px;font-size:14px}
+  }
+  .sidebar-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:99;opacity:0;pointer-events:none;transition:opacity .22s}
+  .sidebar-backdrop.show{opacity:1;pointer-events:auto}
 </style>
 </head>
 <body>
+<button class="menu-toggle" id="menuToggle" aria-label="打开菜单">☰</button>
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 <div class="app">
   <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="brand">
       <div class="logo">🛡️</div>
       <div>
         <h1>法规备考工作台</h1>
         <small>中级注册安全工程师</small>
       </div>
+      <button class="menu-close" id="menuClose" aria-label="关闭菜单">✕</button>
     </div>
     <nav class="nav" id="nav">
       <button data-view="overview" class="active"><span class="ic">📊</span>总览驾驶舱</button>
@@ -219,7 +250,7 @@
       <button data-view="pomodoro"><span class="ic">⏱️</span>番茄钟</button>
     </nav>
     <div class="side-foot">
-      数据保存在本机浏览器 · <b>离线可用</b><br/>真题/题库请自官方渠道补充
+      本地缓存 · 填 GitHub token 后多设备同步<br/>真题/题库请自官方渠道补充
     </div>
   </aside>
 
@@ -533,7 +564,18 @@ document.getElementById('nav').addEventListener('click',e=>{
   if(b.dataset.view==='mistakes')renderMistakes();
   if(b.dataset.view==='routine')renderRoutine();
   if(b.dataset.view==='pomodoro')renderPomo();
+  // 手机端点完菜单自动收起
+  if(window.innerWidth<=760)closeSidebar();
 });
+
+/* =================== MOBILE SIDEBAR =================== */
+const sidebar=document.getElementById('sidebar');
+const backdrop=document.getElementById('sidebarBackdrop');
+function openSidebar(){sidebar.classList.add('open');backdrop.classList.add('show');document.body.style.overflow='hidden';}
+function closeSidebar(){sidebar.classList.remove('open');backdrop.classList.remove('show');document.body.style.overflow='';}
+document.getElementById('menuToggle').addEventListener('click',openSidebar);
+document.getElementById('menuClose').addEventListener('click',closeSidebar);
+backdrop.addEventListener('click',closeSidebar);
 
 /* =================== HEADER =================== */
 function renderHeader(){
